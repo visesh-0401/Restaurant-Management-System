@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Restaurant - Select Table</title>
+    <style>
+        .table-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        .table-button {
+            padding: 20px;
+            font-size: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .table-button:hover {
+            background-color: #0056b3;
+        }
+        .ready-orders {
+            margin-top: 20px;
+        }
+        .order-box {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchReadyOrders();
+            setInterval(fetchReadyOrders, 5000); // Refresh ready orders every 5 seconds
+        });
+
+        function fetchReadyOrders() {
+            fetch("/get-ready-orders")
+                .then(response => response.json())
+                .then(data => {
+                    const readyDiv = document.getElementById("readyOrders");
+                    readyDiv.innerHTML = "";
+
+                    if (data.length === 0) {
+                        readyDiv.innerHTML = "<p>No ready orders</p>";
+                        return;
+                    }
+
+                    data.forEach(order => {
+                        const div = document.createElement("div");
+                        div.className = "order-box";
+                        div.innerText = `Table ${order.table_no}: ${order.item_name}`;
+                        readyDiv.appendChild(div);
+                    });
+                })
+                .catch(error => console.error("Error fetching ready orders:", error));
+        }
+
+        function goToTable(tableNo) {
+            window.location.href = `order.html?table=${tableNo}`;
+        }
+    </script>
+</head>
+<body>
+    <h2>Select a Table</h2>
+    <div class="table-container">
+        <button class="table-button" onclick="goToTable(1)">Table 1</button>
+        <button class="table-button" onclick="goToTable(2)">Table 2</button>
+        <button class="table-button" onclick="goToTable(3)">Table 3</button>
+        <button class="table-button" onclick="goToTable(4)">Table 4</button>
+        <button class="table-button" onclick="goToTable(5)">Table 5</button>
+        <button class="table-button" onclick="goToTable(6)">Table 6</button>
+        <button class="table-button" onclick="goToTable(7)">Table 7</button>
+        <button class="table-button" onclick="goToTable(8)">Table 8</button>
+    </div>
+
+    <h2 class="ready-orders">Ready Orders</h2>
+    <div id="readyOrders"></div>
+</body>
+</html>

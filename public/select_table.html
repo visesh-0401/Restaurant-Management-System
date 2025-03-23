@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Select Table</title>
+    <script>
+        function selectTable() {
+            const tableNo = document.getElementById("tableNo").value;
+            if (tableNo) {
+                localStorage.setItem("selectedTable", tableNo);
+                window.location.href = "order_page.html"; // Redirect to order page
+            } else {
+                alert("Please select a table number.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Select Table</h2>
+    <label for="tableNo">Enter Table Number:</label>
+    <input type="number" id="tableNo" min="1">
+    <button onclick="selectTable()">Proceed</button>
+</body>
+</html>

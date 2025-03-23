@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Table Order</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableNo = urlParams.get("table");
+            document.getElementById("tableTitle").innerText = `Table ${tableNo} Order`;
+        });
+
+        function submitOrder() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tableNo = urlParams.get("table");
+            const itemName = document.getElementById("item").value;
+
+            fetch("/add-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ tableNo, itemName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                window.location.href = "home.html";
+            })
+            .catch(error => console.error("Error submitting order:", error));
+        }
+    </script>
+</head>
+<body>
+    <h2 id="tableTitle"></h2>
+    <label>Item Name:</label>
+    <input type="text" id="item" required>
+    <button onclick="submitOrder()">Submit Order</button>
+</body>
+</html>

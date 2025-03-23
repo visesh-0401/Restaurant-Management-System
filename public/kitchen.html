@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Kitchen View</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchOrders();
+            setInterval(fetchOrders, 5000); // Refresh orders every 5 seconds
+        });
+
+        function fetchOrders() {
+            fetch("/get-orders")
+                .then(response => response.json())
+                .then(data => {
+                    const queueDiv = document.getElementById("queue");
+                    const preparingDiv = document.getElementById("preparing");
+                    const readyDiv = document.getElementById("ready");
+
+                    queueDiv.innerHTML = "";
+                    preparingDiv.innerHTML = "";
+                    readyDiv.innerHTML = "";
+
+                    data.forEach(order => {
+                        const orderElement = document.createElement("div");
+                        orderElement.innerHTML = `Table ${order.table_no} - ${order.item_name} 
+                            <select onchange="updateStatus(${order.table_no}, '${order.item_name}', this.value)">
+                                <option value="In Queue" ${order.status === "In Queue" ? "selected" : ""}>In Queue</option>
+                                <option value="Preparing" ${order.status === "Preparing" ? "selected" : ""}>Preparing</option>
+                                <option value="Ready" ${order.status === "Ready" ? "selected" : ""}>Ready</option>
+                            </select>`;
+
+                        if (order.status === "In Queue") queueDiv.appendChild(orderElement);
+                        else if (order.status === "Preparing") preparingDiv.appendChild(orderElement);
+                        else if (order.status === "Ready") readyDiv.appendChild(orderElement);
+                    });
+                })
+                .catch(error => console.error("Error fetching orders:", error));
+        }
+
+        function updateStatus(tableNo, item, status) {
+            fetch("/update-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({status, tableNo, item })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchOrders(); // Refresh orders immediately after updating
+            })
+            .catch(error => console.error("Error updating order:", error));
+        }
+    </script>
+</head>
+<body>
+    <h2>Kitchen Order Tracking</h2>
+    <div style="display: flex; gap: 20px;">
+        <div>
+            <h3>In Queue</h3>
+            <div id="queue"></div>
+        </div>
+        <div>
+            <h3>Preparing</h3>
+            <div id="preparing"></div>
+        </div>
+        <div>
+            <h3>Ready</h3>
+            <div id="ready"></div>
+        </div>
+    </div>
+</body>
+</html>
