@@ -1,85 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Restaurant - Select Table</title>
-    <style>
-        .table-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            text-align: center;
-        }
-        .table-button {
-            padding: 20px;
-            font-size: 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .table-button:hover {
-            background-color: #0056b3;
-        }
-        .ready-orders {
-            margin-top: 20px;
-        }
-        .order-box {
-            background-color: #28a745;
-            color: white;
-            padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
-        }
-    </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetchReadyOrders();
-            setInterval(fetchReadyOrders, 5000); // Refresh ready orders every 5 seconds
-        });
+  <meta charset="UTF-8" />
+  <title>Restaurant - Select Table</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --orange: #ff6600;
+      --dark: #1c1c1c;
+      --hover-orange: #e65c00;
+      --green: #009933;
+      --hover-green: #007a29;
+      --red: #cc0000;
+      --hover-red: #990000;
+    }
 
-        function fetchReadyOrders() {
-            fetch("/get-ready-orders")
-                .then(response => response.json())
-                .then(data => {
-                    const readyDiv = document.getElementById("readyOrders");
-                    readyDiv.innerHTML = "";
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
 
-                    if (data.length === 0) {
-                        readyDiv.innerHTML = "<p>No ready orders</p>";
-                        return;
-                    }
+    h2 {
+      color: var(--orange);
+      margin-bottom: 20px;
+    }
 
-                    data.forEach(order => {
-                        const div = document.createElement("div");
-                        div.className = "order-box";
-                        div.innerText = `Table ${order.table_no}: ${order.item_name}`;
-                        readyDiv.appendChild(div);
-                    });
-                })
-                .catch(error => console.error("Error fetching ready orders:", error));
-        }
+    .table-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
 
-        function goToTable(tableNo) {
-            window.location.href = `order.html?table=${tableNo}`;
-        }
-    </script>
+    .table-button {
+      padding: 15px 25px;
+      background-color: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .table-button:hover {
+      background-color: var(--hover-orange);
+    }
+
+    .ready-orders {
+      margin-top: 40px;
+      color: #ff9900;
+    }
+
+    .order-box {
+      background-color: #333;
+      border: 1px solid var(--orange);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px auto;
+      width: 90%;
+      max-width: 500px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .serve-button {
+      padding: 8px 15px;
+      background-color: var(--green);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .serve-button:hover {
+      background-color: var(--hover-green);
+    }
+
+    .logout-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: var(--red);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background-color: var(--hover-red);
+    }
+  </style>
 </head>
 <body>
-    <h2>Select a Table</h2>
-    <div class="table-container">
-        <button class="table-button" onclick="goToTable(1)">Table 1</button>
-        <button class="table-button" onclick="goToTable(2)">Table 2</button>
-        <button class="table-button" onclick="goToTable(3)">Table 3</button>
-        <button class="table-button" onclick="goToTable(4)">Table 4</button>
-        <button class="table-button" onclick="goToTable(5)">Table 5</button>
-        <button class="table-button" onclick="goToTable(6)">Table 6</button>
-        <button class="table-button" onclick="goToTable(7)">Table 7</button>
-        <button class="table-button" onclick="goToTable(8)">Table 8</button>
-    </div>
 
-    <h2 class="ready-orders">Ready Orders</h2>
-    <div id="readyOrders"></div>
+  <button class="logout-button" onclick="logout()">Logout</button>
+
+  <h2 id="waiter-username">Welcome, Waiter</h2>
+
+  <h2>Select a Table</h2>
+
+  <!-- View Bill Button -->
+  <div style="margin-bottom: 20px;">
+    <button class="table-button" onclick="goToBill()">View Bill</button>
+  </div>
+
+  <!-- Table Buttons -->
+  <div class="table-container">
+    <!-- Generate table buttons dynamically if needed -->
+    <button class="table-button" onclick="goToTable(1)">Table 1</button>
+    <button class="table-button" onclick="goToTable(2)">Table 2</button>
+    <button class="table-button" onclick="goToTable(3)">Table 3</button>
+    <button class="table-button" onclick="goToTable(4)">Table 4</button>
+    <button class="table-button" onclick="goToTable(5)">Table 5</button>
+    <button class="table-button" onclick="goToTable(6)">Table 6</button>
+    <button class="table-button" onclick="goToTable(7)">Table 7</button>
+    <button class="table-button" onclick="goToTable(8)">Table 8</button>
+  </div>
+
+  <h2 class="ready-orders">Ready Orders</h2>
+  <div id="readyOrders"></div>
+
+  <script>
+    let waiterId = "";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      waiterId = params.get("waiter") || localStorage.getItem("waiter_id");
+
+      if (!waiterId) {
+        alert("No waiter ID found. Redirecting to login.");
+        window.location.href = "waiter_login.html";
+        return;
+      }
+
+      // Save to localStorage if coming from query param
+      if (params.get("waiter")) {
+        localStorage.setItem("waiter_id", waiterId);
+      }
+
+      document.getElementById("waiter-username").innerText = "Welcome, " + waiterId;
+
+      fetchReadyOrders();
+      setInterval(fetchReadyOrders, 5000);
+    });
+
+    function fetchReadyOrders() {
+      fetch("/get-ready-orders")
+        .then(response => response.json())
+        .then(data => {
+          const readyDiv = document.getElementById("readyOrders");
+          readyDiv.innerHTML = "";
+
+          const waiterOrders = data.filter(order => order.waiter_id === waiterId);
+
+          if (waiterOrders.length === 0) {
+            readyDiv.innerHTML = "<p>No orders assigned to you</p>";
+            return;
+          }
+
+          waiterOrders.forEach(order => {
+            const div = document.createElement("div");
+            div.className = "order-box";
+            div.innerHTML = `
+              <div>
+                <strong>Table ${order.table_no}</strong><br>
+                ${order.item_name} (x${order.quantity})<br>
+                <em>Comment:</em> ${order.comment || "None"}
+              </div>
+              <button class="serve-button" onclick="serveOrder('${order.table_no}', '${order.item_name}')">Serve</button>
+            `;
+            readyDiv.appendChild(div);
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching ready orders:", error);
+        });
+    }
+
+    function serveOrder(tableNo, itemName) {
+      fetch("/serve-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tableNo, item: itemName, waiter_id: waiterId })
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          fetchReadyOrders();
+        })
+        .catch(error => console.error("Error serving order:", error));
+    }
+
+    function goToTable(tableNo) {
+      window.location.href = `order.html?table=${tableNo}&waiter=${waiterId}`;
+    }
+
+    function goToBill() {
+      window.location.href = `bill.html?waiter=${waiterId}`;
+    }
+
+    function logout() {
+      localStorage.removeItem("waiter_id");
+      window.location.href = "index.html";
+    }
+  </script>
+
 </body>
 </html>

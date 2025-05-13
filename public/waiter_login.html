@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Waiter Login</title>
+  <style>
+    :root {
+      --orange: #ff6600;
+      --dark: #1c1c1c;
+      --hover-orange: #e65c00;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h2 {
+      color: var(--orange);
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #2b2b2b;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #ddd;
+      text-align: left;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+    }
+
+    input:focus {
+      outline: 2px solid var(--orange);
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background-color: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--hover-orange);
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ff4d4d;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    @media (max-width: 500px) {
+      form {
+        padding: 20px;
+      }
+
+      button {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Waiter Login</h2>
+  <form id="loginForm">
+    <label for="id">Waiter ID:</label>
+    <input type="text" id="id" name="id" required />
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required />
+
+    <button type="submit">Login</button>
+    <div class="error" id="errorMsg"></div>
+  </form>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const idInput = document.getElementById("id");
+      const passwordInput = document.getElementById("password");
+      const errorMsg = document.getElementById("errorMsg");
+      const button = event.target.querySelector("button");
+
+      const id = idInput.value.trim();
+      const password = passwordInput.value;
+
+      errorMsg.textContent = "";
+
+      if (id === "" || password === "") {
+        errorMsg.textContent = "Both fields are required.";
+        return;
+      }
+
+      if (password.length < 4) {
+        errorMsg.textContent = "Password must be at least 4 characters.";
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Logging in...";
+
+      try {
+        const response = await fetch("/waiter_login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          // Save to localStorage
+          localStorage.setItem("waiter_id", id);
+
+          // Redirect to home.html with ID in URL
+          window.location.href = `home.html?waiter_id=${encodeURIComponent(id)}`;
+        } else {
+          errorMsg.textContent = result.message || "Login failed. Please try again.";
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        errorMsg.textContent = "Server error. Try again later.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Login";
+      }
+    });
+  </script>
+
+</body>
+</html>

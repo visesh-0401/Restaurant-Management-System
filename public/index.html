@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurant Management System</title>
+  <style>
+    :root {
+      --orange: #ff6600;
+      --dark: #1c1c1c;
+      --hover-orange: #e65c00;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 50px 20px;
+      margin: 0;
+    }
+
+    h1 {
+      color: var(--orange);
+      margin-bottom: 40px;
+    }
+
+    .button {
+      display: block;
+      width: 90%;
+      max-width: 300px;
+      padding: 15px 20px;
+      margin: 15px auto;
+      font-size: 18px;
+      text-decoration: none;
+      color: white;
+      background-color: var(--orange);
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: var(--hover-orange);
+    }
+
+    .admin-login {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 12px;
+      font-size: 14px;
+      background-color: transparent;
+      border: 2px solid var(--orange);
+      color: var(--orange);
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .admin-login:hover {
+      background-color: var(--orange);
+      color: white;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 30px 10px;
+      }
+
+      .admin-login {
+        position: static;
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+
+  <!-- Admin login button -->
+  <a href="admin_login.html" class="admin-login">Login as Admin</a>
+
+  <h1>Welcome to Restaurant Management System</h1>
+  <a href="waiter_login.html" class="button">Waiter</a>
+  <a href="kitchen_login.html" class="button">Kitchen</a>
+
+</body>
+</html>

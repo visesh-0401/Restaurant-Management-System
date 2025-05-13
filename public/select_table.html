@@ -1,23 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Table</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffa500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-size: 18px;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            width: 60%;
+            max-width: 300px;
+            font-size: 16px;
+            border: 2px solid #ffa500;
+            border-radius: 5px;
+            background-color: #333;
+            color: #ffa500;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            background-color: #ffa500;
+            color: black;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e69500;
+        }
+
+        @media screen and (max-width: 600px) {
+            input[type="number"] {
+                width: 80%;
+            }
+
+            button {
+                width: 80%;
+                font-size: 16px;
+            }
+        }
+    </style>
     <script>
         function selectTable() {
-            const tableNo = document.getElementById("tableNo").value;
-            if (tableNo) {
+            const tableNo = parseInt(document.getElementById("tableNo").value);
+            if (tableNo >= 1 && tableNo <= 20) {
                 localStorage.setItem("selectedTable", tableNo);
-                window.location.href = "order_page.html"; // Redirect to order page
+                window.location.href = "order_page.html"; // Adjust page name if needed
             } else {
-                alert("Please select a table number.");
+                alert("Please enter a valid table number (1–20).");
             }
         }
     </script>
 </head>
 <body>
     <h2>Select Table</h2>
-    <label for="tableNo">Enter Table Number:</label>
-    <input type="number" id="tableNo" min="1">
+    <label for="tableNo">Enter Table Number (1–20):</label><br>
+    <input type="number" id="tableNo" min="1" max="20" placeholder="e.g., 5" onkeypress="if(event.key === 'Enter') selectTable()"><br>
     <button onclick="selectTable()">Proceed</button>
 </body>
 </html>

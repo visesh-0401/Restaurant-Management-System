@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --orange: #ff6600;
+      --dark: #1c1c1c;
+      --hover-orange: #e65c00;
+      --green: #009933;
+      --hover-green: #007a29;
+      --red: #cc0000;
+      --hover-red: #990000;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      position: relative;
+    }
+
+    .login-container {
+      background-color: #2c2c2c;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .login-container h2 {
+      color: var(--orange);
+      margin-bottom: 25px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 12px 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--orange);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background-color: var(--hover-orange);
+    }
+
+    .error-message {
+      color: var(--red);
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    @media screen and (max-width: 480px) {
+      .login-container {
+        padding: 20px;
+      }
+
+      .login-container h2 {
+        font-size: 1.4rem;
+      }
+
+      .login-container input,
+      .login-container button {
+        font-size: 15px;
+        padding: 10px;
+      }
+    }
+
+    /* Styling for the back button */
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: var(--red);
+      color: white;
+      font-size: 16px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: var(--hover-red);
+    }
+  </style>
+</head>
+<body>
+
+  <button class="back-button" onclick="window.history.back()">Back</button>
+
+  <div class="login-container">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div id="error" class="error-message"></div>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const error = document.getElementById("error");
+
+      if (username === "admin" && password === "12345") {
+        localStorage.setItem("admin_logged_in", "true");
+        window.location.href = "admin_dashboard.html"; // Change to your actual admin page
+      } else {
+        error.textContent = "Invalid username or password!";
+      }
+    }
+
+    // Add event listener for the "Enter" key to trigger login
+    document.getElementById("password").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+
+    // Optional: Allow pressing "Enter" on the username field as well
+    document.getElementById("username").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        document.getElementById("password").focus(); // Move focus to the password field
+      }
+    });
+  </script>
+
+</body>
+</html>

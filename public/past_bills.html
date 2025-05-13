@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Past Bill Records</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: #1a1a1a;
+      color: #ffa500;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+    }
+
+    .records-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .record {
+      background-color: #2b2b2b;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ffa50044;
+    }
+
+    .record h3 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+      color: #ffa500;
+    }
+
+    .bill-item {
+      color: #fff;
+      margin: 4px 0;
+      font-size: 0.95rem;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      color: #ffa500;
+    }
+
+    @media (max-width: 600px) {
+      .record {
+        padding: 15px;
+      }
+
+      .record h3 {
+        font-size: 1.1rem;
+      }
+
+      .bill-item {
+        font-size: 0.9rem;
+      }
+
+      .total {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Past Bill Records</h2>
+  <div class="records-container" id="recordsContainer">
+    <!-- Past bills will appear here -->
+  </div>
+
+  <script>
+    fetch('/past-bills')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById("recordsContainer");
+
+        if (!data || data.length === 0) {
+          container.innerHTML = `<p style="text-align:center; color:#fff;">No past bills found.</p>`;
+          return;
+        }
+
+        data.forEach(bill => {
+          let totalAmount = 0;
+          let billHTML = `
+            <div class="record">
+              <h3>Table ${bill.tableNo} - ${new Date(bill.timestamp).toLocaleString()}</h3>
+          `;
+
+          bill.orders.forEach(item => {
+            const rate = parseFloat(item.rate);
+            const quantity = parseInt(item.quantity);
+            const amount = rate * quantity;
+            totalAmount += amount;
+
+            billHTML += `<div class="bill-item">${item.item_name} x${quantity} = ₹${amount.toFixed(2)}</div>`;
+          });
+
+          billHTML += `<div class="total">Total: ₹${totalAmount.toFixed(2)}</div></div>`;
+          container.innerHTML += billHTML;
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching past bills:", err);
+        document.getElementById("recordsContainer").innerHTML = `<p style="color: red;">Error loading past bills.</p>`;
+      });
+  </script>
+</body>
+</html>

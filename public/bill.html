@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Table-wise Billing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --orange: #ff6600;
+      --dark: #1c1c1c;
+      --hover-orange: #e65c00;
+      --green: #009933;
+      --hover-green: #007a29;
+      --red: #cc0000;
+      --hover-red: #990000;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    h2 {
+      color: var(--orange);
+      margin-bottom: 20px;
+    }
+
+    .tables-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .table-button {
+      padding: 15px 25px;
+      background-color: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .table-button:hover {
+      background-color: var(--hover-orange);
+    }
+
+    .bill-display {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      border: 1px solid var(--orange);
+    }
+
+    .bill-display h3 {
+      margin-bottom: 20px;
+      color: var(--orange);
+      font-size: 1.5rem;
+    }
+
+    .bill-item {
+      margin-bottom: 10px;
+      color: #fff;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      color: #ffa500;
+      text-align: right;
+    }
+
+    .pay-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: var(--green);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .pay-button:hover {
+      background-color: var(--hover-green);
+    }
+
+    .logout-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: var(--red);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+      background-color: var(--hover-red);
+    }
+  </style>
+</head>
+<body>
+
+  <button class="logout-button" onclick="logout()">Logout</button>
+
+  <h2 id="waiter-username">Billing Dashboard</h2>
+
+  <h2>Click a Table to View Bill</h2>
+
+  <div class="tables-container">
+    <button class="table-button" onclick="showBill(1)">Table 1</button>
+    <button class="table-button" onclick="showBill(2)">Table 2</button>
+    <button class="table-button" onclick="showBill(3)">Table 3</button>
+    <button class="table-button" onclick="showBill(4)">Table 4</button>
+    <button class="table-button" onclick="showBill(5)">Table 5</button>
+    <button class="table-button" onclick="showBill(6)">Table 6</button>
+    <button class="table-button" onclick="showBill(7)">Table 7</button>
+    <button class="table-button" onclick="showBill(8)">Table 8</button>
+  </div>
+
+  <div class="bill-display" id="billDisplay" style="display:none;">
+    <h3 id="billTitle">Bill for Table</h3>
+    <div id="billItems"></div>
+    <div class="total" id="totalAmount">Total: ₹0</div>
+    <button class="pay-button" onclick="payBill()">Mark as Paid</button>
+  </div>
+
+  <script>
+    let waiterId = "";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+      waiterId = params.get("waiter") || localStorage.getItem("waiter_id");
+
+      if (!waiterId) {
+        alert("No waiter ID found. Redirecting to login.");
+        window.location.href = "waiter_login.html";
+        return;
+      }
+
+      document.getElementById("waiter-username").innerText = "Welcome, " + waiterId;
+    });
+
+    function showBill(tableNo) {
+  document.getElementById("billDisplay").style.display = "block";
+  document.getElementById("billTitle").innerText = `Bill for Table ${tableNo}`;
+
+  fetch(`/generate-bill/${tableNo}`)
+    .then(res => res.json())
+    .then(data => {
+      const billItems = document.getElementById("billItems");
+      const totalAmount = document.getElementById("totalAmount");
+      billItems.innerHTML = "";
+
+      let total = 0;
+
+      data.orders.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "bill-item";
+
+        const quantity = parseFloat(item.quantity);
+        const rate = parseFloat(item.rate);
+        const amount = quantity * rate;
+
+        total += amount;
+
+        div.innerText = `${item.item_name} (x${quantity}) - ₹${amount.toFixed(2)}`;
+        billItems.appendChild(div);
+      });
+
+      totalAmount.innerText = "Total: ₹" + total.toFixed(2);
+    })
+    .catch(err => {
+      console.error("Error fetching bill:", err);
+    });
+}
+
+function payBill() {
+  const tableText = document.getElementById("billTitle").innerText;
+  const tableNo = tableText.match(/\d+/)[0];
+
+  fetch(`/pay-bill/${tableNo}`, {
+    method: "DELETE",
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message);
+      document.getElementById("billDisplay").style.display = "none";
+    })
+    .catch(err => {
+      console.error("Error paying bill:", err);
+    });
+}
+
+
+    function logout() {
+      localStorage.removeItem("waiter_id");
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
